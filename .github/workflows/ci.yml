@@ -37,7 +37,7 @@ jobs:
         run: docker build -t azure-devops-web:ci ./app
 
       - name: Scan Docker Image with Trivy
-        uses: aquasecurity/trivy-action@v0.33.1
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: azure-devops-web:ci
           format: table
