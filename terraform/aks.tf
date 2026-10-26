@@ -7,9 +7,9 @@ resource "azurerm_kubernetes_cluster" "main" {
   sku_tier = "Free"
 
   default_node_pool {
-    name       = "system"
-    node_count = 2
-    vm_size    = "Standard_D2s_v4"
+    name           = "system"
+    node_count     = 2
+    vm_size        = "Standard_D2s_v4"
     vnet_subnet_id = azurerm_subnet.aks.id
   }
 
@@ -21,9 +21,9 @@ resource "azurerm_kubernetes_cluster" "main" {
   depends_on = [azurerm_role_assignment.aks_network]
 
   network_profile {
-    network_plugin = "azure"
+    network_plugin      = "azure"
     network_plugin_mode = "overlay"
-    load_balancer_sku = "standard"
+    load_balancer_sku   = "standard"
   }
 
   tags = {
