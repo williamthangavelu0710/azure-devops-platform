@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: azure-devops-web
+  labels:
+    app: azure-devops-web
+spec:
+  type: ClusterIP
+  selector:
+    app: azure-devops-web
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      protocol: TCP
