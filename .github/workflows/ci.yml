@@ -11,12 +11,27 @@ permissions:
 
 jobs:
   build:
-    name: Build Docker Image
+    name: Validate and Build
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install Dependencies
+        working-directory: ./app
+        run: npm ci
+
+      - name: Validate HTML
+        working-directory: ./app
+        run: npm run lint
 
       - name: Build Docker Image
         run: docker build -t azure-devops-web:ci ./app
