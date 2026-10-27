@@ -5,6 +5,7 @@ namespace: dev
 
 resources:
   - ../../base
+  - namespace.yaml
 
 replicas:
   - name: azure-devops-web
