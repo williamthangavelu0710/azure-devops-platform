@@ -50,3 +50,6 @@ jobs:
 
           echo "Checking DEV deployment permissions..."
           kubectl auth can-i patch deployments.apps -n dev
+
+      - name: Deploy Application to AKS DEV
+        run: kubectl apply -k kubernetes/overlays/dev

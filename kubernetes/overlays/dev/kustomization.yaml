@@ -5,8 +5,12 @@ namespace: dev
 
 resources:
   - ../../base
-  - namespace.yaml
 
 replicas:
   - name: azure-devops-web
     count: 1
+
+images:
+  - name: azure-devops-web
+    newName: acrdevopswt20261027.azurecr.io/azure-devops-web
+    newTag: v3
