@@ -49,7 +49,10 @@ jobs:
           kubectl auth whoami
 
           echo "Checking DEV deployment permissions..."
-          kubectl auth can-i patch deployments.apps -n dev
+          kubectl auth can-i patch deployments.apps -n dev --quiet
 
       - name: Deploy Application to AKS DEV
         run: kubectl apply -k kubernetes/overlays/dev
+
+      - name: Verify Application Rollout
+        run: kubectl rollout status deployment/azure-devops-web -n dev --timeout=120s
