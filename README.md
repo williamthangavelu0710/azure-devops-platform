@@ -101,13 +101,14 @@ The AKS cluster is stopped when not required for testing to reduce compute costs
 
 ## Latest Verification Status
 
-- **GitHub Actions CI Run #24:** Successful on commit `7c12246`.
+- **GitHub Actions CI Run #25:** Successful on commit `148cb47`.
 - **Application validation:** Build and container image security checks passed.
 - **Infrastructure validation:** Terraform checks passed; Trivy infrastructure findings remain documented.
-- **Kustomize validation:** DEV manifests rendered locally with one Deployment and one Service in the `dev` namespace, using ACR image `azure-devops-web:v3`.
-- **Previous live CD validation:** OIDC authentication, Kubernetes deployment, application rollout, and HTTP response succeeded before the latest workflow changes.
-- **Current live CD validation:** Pending. The updated authorization check and rollout verification still require an end-to-end test.
-- **AKS power state:** Stopped after earlier validation to reduce compute costs.
+- **Kustomize validation:** DEV manifests rendered successfully with one Deployment and one Service in the `dev` namespace, using ACR image `azure-devops-web:v3`.
+- **Live CD validation:** GitHub Actions Run `40621278363` completed successfully using Azure OIDC authentication, Kubernetes authorization checks, Kustomize deployment, and rollout verification.
+- **Kubernetes verification:** Deployment `azure-devops-web` reported `1/1` available; application Pod reported `1/1 Running` with zero restarts.
+- **Application HTTP validation:** Successfully retrieved the NGINX application HTML from inside the running Pod, confirming `Deployment Successful!`.
+- **AKS power state:** Confirmed `Stopped` after final validation to reduce compute costs.
 
 ### Deployment Prerequisites
 
