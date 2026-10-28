@@ -1,28 +1,34 @@
 name: Azure DevOps Platform CD
 
 on:
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: "Select deployment environment"
-        required: true
-        type: choice
-        options:
-          - dev
+  workflow_run:
+    workflows:
+      - Azure DevOps Platform CI
+    types:
+      - completed
+    branches:
+      - main
 
 permissions:
   id-token: write
   contents: read
 
+concurrency:
+  group: azure-devops-platform-dev-deployment
+  cancel-in-progress: false
+
 jobs:
   deployment:
-    name: Test DEV Authentication
+    name: Deploy to DEV
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == 'williamthangavelu0710/azure-devops-platform' && github.event.workflow_run.event == 'push' }}
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    environment: dev
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Azure Login (OIDC)
         uses: azure/login@v2
@@ -30,6 +36,18 @@ jobs:
           client-id: 7daaaae5-8fcc-40c8-ac29-98bc96e0bad2
           tenant-id: 4f6d9379-ac8b-476f-80a3-67dbf739dc36
           subscription-id: 65dd607e-b509-4892-814d-65691a35f21b
+
+      - name: Publish Git SHA Image to ACR
+        env:
+          IMAGE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          ACR_NAME=acrdevopswt20261027
+          IMAGE="$ACR_NAME.azurecr.io/azure-devops-web:$IMAGE_SHA"
+
+          az acr login --name "$ACR_NAME"
+          docker build --platform linux/amd64 --build-arg GIT_SHA="$IMAGE_SHA" -t "$IMAGE" ./app
+          docker push "$IMAGE"
+          echo "Published $IMAGE"
 
       - name: Install kubelogin
         uses: azure/use-kubelogin@v1
@@ -52,7 +70,20 @@ jobs:
           kubectl auth can-i patch deployments.apps -n dev --quiet
 
       - name: Deploy Application to AKS DEV
-        run: kubectl apply -k kubernetes/overlays/dev
+        env:
+          IMAGE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          cp -R kubernetes /tmp/azure-dev-kubernetes
+          cd /tmp/azure-dev-kubernetes/overlays/dev
+          sed -i "s|newTag: v3|newTag: $IMAGE_SHA|" kustomization.yaml
+          kubectl apply -k .
 
-      - name: Verify Application Rollout
-        run: kubectl rollout status deployment/azure-devops-web -n dev --timeout=120s
+      - name: Verify Application Rollout and Roll Back on Failure
+        run: |
+          if ! kubectl rollout status deployment/azure-devops-web -n dev --timeout=180s; then
+            echo "::error::DEV rollout failed. Restoring previous revision."
+            kubectl rollout undo deployment/azure-devops-web -n dev
+            kubectl rollout status deployment/azure-devops-web -n dev --timeout=180s
+            exit 1
+          fi
+          echo "DEV rollout successful."

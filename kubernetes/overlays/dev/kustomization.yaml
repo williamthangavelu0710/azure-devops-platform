@@ -5,6 +5,8 @@ namespace: dev
 
 resources:
   - ../../base
+  - hpa.yaml
+  - configmap.yaml
 
 replicas:
   - name: azure-devops-web
