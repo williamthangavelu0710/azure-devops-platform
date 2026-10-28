@@ -6,6 +6,11 @@ metadata:
     app: azure-devops-web
 spec:
   replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: azure-devops-web
@@ -48,7 +53,7 @@ spec:
               cpu: "50m"
               memory: "64Mi"
             limits:
-              cpu: "250m"
+              cpu: "200m"
               memory: "128Mi"
           volumeMounts:
             - name: nginx-tmp
