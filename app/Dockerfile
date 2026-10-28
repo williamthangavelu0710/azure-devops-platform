@@ -10,6 +10,8 @@ COPY config/env.json ./config/env.json
 RUN printf '{"sha":"%s"}\n' "$GIT_SHA" > version.json
 
 FROM nginxinc/nginx-unprivileged:stable-alpine
+USER root
+RUN apk upgrade --no-cache
 
 COPY --from=builder /build/index.html /usr/share/nginx/html/index.html
 COPY --from=builder /build/app.js /usr/share/nginx/html/app.js
