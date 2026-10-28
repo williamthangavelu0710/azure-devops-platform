@@ -18,9 +18,31 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  changes:
+    name: Detect DEV Deployment Changes
+    runs-on: ubuntu-latest
+    outputs:
+      deploy: ${{ steps.filter.outputs.deploy }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - name: Detect Relevant Changes
+        id: filter
+        run: |
+          if git diff --name-only HEAD^1 HEAD | grep -Eq "^(app/|kubernetes/base/|kubernetes/overlays/dev/)"; then
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          fi
+
   deployment:
     name: Deploy to DEV
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == 'williamthangavelu0710/azure-devops-platform' && github.event.workflow_run.event == 'push' }}
+    needs: changes
+    if: ${{ needs.changes.outputs.deploy == 'true' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == 'williamthangavelu0710/azure-devops-platform' && github.event.workflow_run.event == 'push' }}
     runs-on: ubuntu-latest
     environment: dev
 
