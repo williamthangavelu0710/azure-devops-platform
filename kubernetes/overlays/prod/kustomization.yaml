@@ -6,6 +6,8 @@ namespace: prod
 resources:
   - ../../base
   - namespace.yaml
+  - pdb.yaml
+  - configmap.yaml
 
 replicas:
   - name: azure-devops-web

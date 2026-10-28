@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: azure-devops-web-config
+data:
+  env.json: |
+    {"environment":"PROD"}

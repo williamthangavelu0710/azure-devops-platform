@@ -1,0 +1,9 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: azure-devops-web
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: azure-devops-web
