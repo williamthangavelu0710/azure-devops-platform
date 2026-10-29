@@ -11,7 +11,7 @@ resource "azurerm_role_assignment" "aks_network" {
 }
 
 resource "azurerm_role_assignment" "aks_acr_pull" {
-  scope                = azurerm_container_registry.main.id
+  scope                = var.environment == "prod" ? data.azurerm_container_registry.shared[0].id : azurerm_container_registry.main[0].id
   role_definition_name = "AcrPull"
   principal_id         = azurerm_kubernetes_cluster.main.kubelet_identity[0].object_id
 }

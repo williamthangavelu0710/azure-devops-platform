@@ -7,12 +7,15 @@ resource "azurerm_kubernetes_cluster" "main" {
   sku_tier = "Free"
 
   default_node_pool {
-    name            = "system"
-    node_count      = 1
-    os_disk_size_gb = 64
-    os_disk_type    = "Managed"
-    vm_size         = "Standard_D2s_v4"
-    vnet_subnet_id  = azurerm_subnet.aks.id
+    name                 = "system"
+    node_count           = var.environment == "prod" ? 2 : 1
+    auto_scaling_enabled = var.environment == "prod"
+    min_count            = var.environment == "prod" ? 2 : null
+    max_count            = var.environment == "prod" ? 4 : null
+    os_disk_size_gb      = 64
+    os_disk_type         = "Managed"
+    vm_size              = var.environment == "prod" ? "Standard_D2s_v5" : "Standard_D2s_v4"
+    vnet_subnet_id       = azurerm_subnet.aks.id
     upgrade_settings {
       max_surge = "10%"
     }
@@ -25,7 +28,7 @@ resource "azurerm_kubernetes_cluster" "main" {
 
   azure_active_directory_role_based_access_control {
     tenant_id          = "4f6d9379-ac8b-476f-80a3-67dbf739dc36"
-    azure_rbac_enabled = false
+    azure_rbac_enabled = var.environment == "prod"
   }
 
   depends_on = [azurerm_role_assignment.aks_network]

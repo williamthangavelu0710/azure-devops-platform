@@ -5,7 +5,6 @@ namespace: prod
 
 resources:
   - ../../base
-  - namespace.yaml
   - pdb.yaml
   - hpa.yaml
   - configmap.yaml
@@ -13,3 +12,8 @@ resources:
 replicas:
   - name: azure-devops-web
     count: 2
+
+images:
+  - name: azure-devops-web
+    newName: acrdevopswt20261027.azurecr.io/azure-devops-web
+    newTag: v3
