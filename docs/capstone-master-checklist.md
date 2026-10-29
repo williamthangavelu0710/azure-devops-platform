@@ -4,6 +4,44 @@
 > Repository: `williamthangavelu0710/azure-devops-platform` · Working branch: `feat/prod-deployment` · Open PR: #5.
 > Baseline evidence recorded from our chat through commit `8ab5e4c`; this checklist **does not imply** we have audited the complete live repository.
 
+## Current verified baseline — October 29, 2026
+
+> This section supersedes outdated snapshot references below.
+> Original acceptance criteria remain preserved for traceability.
+> Detailed evidence: `docs/evidence.md`.
+
+| Area | Current verified status |
+|---|---|
+| GitHub PR #14 | MERGED; merge commit `4fdc46e` |
+| Main branch protection | One required approval restored after temporary solo-developer exception |
+| Required CI checks | Both passed on PR #14 |
+| Terraform network migration | PASS; three state moves, zero infrastructure changes |
+| DEV Terraform validation | PASS; formatting, validation, and no-drift plan |
+| DEV Azure OIDC | PASS; GitHub Actions run `40973658957` |
+| Post-merge CI | PASS; run `40973503034` |
+| Post-merge CD | PASS; run `40973564599`, DEV deployment skipped |
+| DEV deployment gate | `DEV_DEPLOY_ENABLED=false` at last verification |
+| Live DEV deployment | PENDING verification |
+| HPA load test | PENDING |
+| Monitoring and incident drill | PENDING |
+| Failed-release rollback | PENDING |
+| Final demonstration | PENDING |
+
+### Facilitator-approved demo exceptions
+
+- **DEV-only:** Karthik approved omitting a separately deployed PROD environment because of Azure Free Tier limitations.
+- **Promotion/approval:** Karthik approved omitting the PROD approval and promotion stage from the final demo.
+- These are exceptions to the original assignment, not evidence that the original PROD requirements were completed.
+- The temporary PR #14 review-policy exception was a separate solo-developer action; it was not an independent review or a facilitator-approved waiver.
+
+### Safety
+
+- Keep DEV deployment disabled until explicitly authorized.
+- Do not start AKS, apply Terraform, provision PROD, or destroy resources without explicit authorization.
+- Continue to use feature branches and pull requests.
+
+---
+
 ## Rules of use
 
 - **PASS** only after the precise *Done when* criterion has evidence (command output, screenshot, URL, PR check, or documented verified exception agreed by facilitator).
