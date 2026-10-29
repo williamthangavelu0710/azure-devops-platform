@@ -42,7 +42,7 @@ jobs:
   deployment:
     name: Deploy to DEV
     needs: changes
-    if: ${{ needs.changes.outputs.deploy == 'true' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == 'williamthangavelu0710/azure-devops-platform' && github.event.workflow_run.event == 'push' }}
+    if: ${{ vars.DEV_DEPLOY_ENABLED == 'true' && needs.changes.outputs.deploy == 'true' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == 'williamthangavelu0710/azure-devops-platform' && github.event.workflow_run.event == 'push' }}
     runs-on: ubuntu-latest
     environment: dev
 
