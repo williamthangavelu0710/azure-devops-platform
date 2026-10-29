@@ -1,4 +1,8 @@
 resource "azurerm_storage_account" "tfstate" {
+  lifecycle {
+    prevent_destroy = true
+  }
+
   name                            = "stdevopswtstate20261028"
   resource_group_name             = azurerm_resource_group.shared.name
   location                        = azurerm_resource_group.shared.location
