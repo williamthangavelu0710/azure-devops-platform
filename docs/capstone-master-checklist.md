@@ -75,11 +75,11 @@
 
 | ID | Requirement | Done when / exact verification | Status | Evidence or outstanding work |
 |---|---|---|---|---|
-| **P3.1** | Bootstrap versions and validation | `infra/bootstrap` pins Terraform >=1.9 / azurerm 4.x; Azure AD storage auth; lock file committed; init/validate pass. | **UNVERIFIED** | Bootstrap path exists; exact provider/state settings unverified. |
-| **P3.2** | Tagged resource groups | Bootstrap plan shows shared, dev, prod groups with required tags. | **UNVERIFIED** | Groups/resources exist in parts; exact bootstrap plan and tag scheme not audited. |
-| **P3.3** | Secure Terraform state storage | StorageV2, no shared keys, TLS1.2, versioning, 7-day soft delete, tfstate, prevent_destroy, your blob role. | **UNVERIFIED** | Remote state used; every security attribute needs audit. |
-| **P3.4** | Shared ACR | Basic ACR admin disabled; `az acr login` and manual P2 image push pass. | **PARTIAL** | ACR exists and CI/CD integration demonstrated; manual push/admin settings not fully verified. |
-| **P3.5** | Migrate bootstrap state | AAD backend, `bootstrap.tfstate`, migrate-state, no local state, `terraform plan` no diff. | **UNVERIFIED** | Remote state noted; original migration and drift evidence not captured. |
+| **P3.1** | Bootstrap versions and validation | `infra/bootstrap` pins Terraform >=1.9 / azurerm 4.x; Azure AD storage auth; lock file committed; init/validate pass. | **PASS** | Steps 299-301: Terraform >=1.9, AzureRM 4.x, AAD storage auth, tracked lock file, fmt and validate pass. |
+| **P3.2** | Tagged resource groups | Bootstrap plan shows shared, dev, prod groups with required tags. | **PARTIAL** | Step 302: shared and DEV groups exist with tags; PROD group absent; remaining bootstrap scope requires review. |
+| **P3.3** | Secure Terraform state storage | StorageV2, no shared keys, TLS1.2, versioning, 7-day soft delete, tfstate, prevent_destroy, your blob role. | **PARTIAL** | Steps 302-303: Azure storage security, versioning and 7-day retention verified; prevent_destroy added in code; remaining role and state checks pending. |
+| **P3.4** | Shared ACR | Basic ACR admin disabled; `az acr login` and manual P2 image push pass. | **PARTIAL** | Step 304: ACR Basic, admin disabled, provisioning succeeded; manual image push acceptance remains to verify. |
+| **P3.5** | Migrate bootstrap state | AAD backend, `bootstrap.tfstate`, migrate-state, no local state, `terraform plan` no diff. | **PARTIAL** | Steps 303-305: platform AzureRM backend and AAD auth verified; DEV and PROD state blobs found; bootstrap state still local, migration and no-drift proof pending. |
 | **P3.6** | Three least-privilege OIDC identities | Plan/dev/prod identities, correct subjects/audience and scoped roles; no subscription-scope assignments. | **PARTIAL** | DEV/PROD OIDC demonstrated; plan identity and role audit unverified. |
 | **P3.7** | GitHub environments and IDs | Dev/prod environments; prod reviewer/branch restriction; relevant tenant/subscription/client variables; no Azure secrets. | **PARTIAL** | PROD GitHub vars exist; required reviewer and full identity variable audit pending. |
 | **P3.8** | OIDC proof workflow | Throwaway dev workflow successfully logs into Azure using OIDC; remove workflow afterward. | **PARTIAL** | DEV CD OIDC succeeded earlier; exact throwaway workflow proof not available. |

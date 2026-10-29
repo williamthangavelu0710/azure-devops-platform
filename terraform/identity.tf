@@ -5,7 +5,7 @@ resource "azurerm_user_assigned_identity" "aks" {
 }
 
 resource "azurerm_role_assignment" "aks_network" {
-  scope                = azurerm_subnet.aks.id
+  scope                = module.network.subnet_id
   role_definition_name = "Network Contributor"
   principal_id         = azurerm_user_assigned_identity.aks.principal_id
 }
