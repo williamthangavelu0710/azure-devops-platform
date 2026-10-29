@@ -33,20 +33,15 @@ jobs:
         run: make lint
 
       - name: Build Docker Image
-        run: docker build --platform linux/amd64 --build-arg GIT_SHA="${{ github.sha }}" -t azure-devops-web:ci ./site
+        run: docker build --platform linux/amd64 --build-arg APP_VERSION="${{ github.sha }}" -t azure-devops-web:ci ./site
 
-      - name: Smoke Test Health Endpoint
+      - name: Smoke Test Container
         run: |
-          docker run -d --name ci-web -p 18080:8080 azure-devops-web:ci
-          for i in $(seq 1 15); do
-            if curl --fail --silent http://localhost:18080/healthz | grep -qx ok; then
-              echo "PASS: /healthz returned HTTP 200 and ok"
-              exit 0
-            fi
-            sleep 2
-          done
-          docker logs ci-web
-          exit 1
+          set -e
+          docker run -d --name ci-web --read-only --tmpfs /tmp \
+            -p 127.0.0.1:18080:8080 azure-devops-web:ci
+          trap 'docker logs ci-web; docker rm -f ci-web' EXIT
+          bash scripts/smoke.sh http://127.0.0.1:18080 "${{ github.sha }}"
 
       - name: Scan Docker Image with Trivy
         uses: aquasecurity/trivy-action@v0.36.0

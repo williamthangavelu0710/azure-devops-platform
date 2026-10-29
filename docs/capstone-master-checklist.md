@@ -63,13 +63,13 @@
 
 | ID | Requirement | Done when / exact verification | Status | Evidence or outstanding work |
 |---|---|---|---|---|
-| **P2.1** | Small build context | `.dockerignore` excludes `.git`, infra/k8s/docs/local files; build context <1 MB. | **PARTIAL** | Docker build context 2.75 kB; verify requested exclusion patterns in `site/.dockerignore`. |
-| **P2.2** | Hardened multi-stage image | Build on Alpine; generate `version.json` from `APP_VERSION`; Alpine nginx-unprivileged runtime; base tags + digests; source/revision OCI labels; image <50 MB; non-root inspect. | **PARTIAL** | Multi-stage works; current build uses `GIT_SHA`; digest pinning, labels, exact size/user not verified. |
-| **P2.3** | CPU architecture | Inspect final image and confirm `amd64`. | **UNVERIFIED** | Docker built with `--platform linux/amd64`; inspect result not captured. |
-| **P2.4** | Read-only runtime parity | Run with `--read-only --tmpfs /tmp -p 8080:8080`; page shows expected SHA and hostname; healthz HTTP 200. | **PARTIAL** | Normal Docker endpoint checks passed; exact read-only run still not verified. |
-| **P2.5** | Reusable smoke test | `scripts/smoke.sh <base-url> <sha>` retries <=2 min, checks SHA, health and title, fails for wrong SHA; used in CI and CD. | **UNVERIFIED** | CI has inline health check; reusable script and negative test not verified. |
-| **P2.6** | Trivy and Hadolint | Trivy `--ignore-unfixed --severity CRITICAL,HIGH`; zero fixable critical; Hadolint zero errors; HIGH findings fixed or justified in PR. | **PARTIAL** | CI invokes Trivy; required severity/hadolint/result proof not yet captured. |
-| **P2.7** | PR, merge and checkpoint | Reviewed PR merged and CP1 booked/completed (site in local container; protected main). | **BLOCKED** | Review/merge/branch-protection blockers; CP1 not verified. |
+| **P2.1** | Small build context | `.dockerignore` excludes `.git`, infra/k8s/docs/local files; build context <1 MB. | **PASS** | Docker build context 177 bytes in Step 293; .dockerignore exclusions reviewed and expanded. |
+| **P2.2** | Hardened multi-stage image | Build on Alpine; generate `version.json` from `APP_VERSION`; Alpine nginx-unprivileged runtime; base tags + digests; source/revision OCI labels; image <50 MB; non-root inspect. | **PASS** | Multi-stage APP_VERSION build; both images pinned by digest; project OCI labels verified; image 27,466,007 bytes; runtime UID 101. |
+| **P2.3** | CPU architecture | Inspect final image and confirm `amd64`. | **PASS** | docker image inspect confirmed linux/amd64 in Steps 274 and 293. |
+| **P2.4** | Read-only runtime parity | Run with `--read-only --tmpfs /tmp -p 8080:8080`; page shows expected SHA and hostname; healthz HTTP 200. | **PASS** | Step 275: read-only root filesystem with tmpfs /tmp; health, version SHA, hostname and website verified. |
+| **P2.5** | Reusable smoke test | `scripts/smoke.sh <base-url> <sha>` retries <=2 min, checks SHA, health and title, fails for wrong SHA; used in CI and CD. | **PARTIAL** | Positive and negative SHA smoke tests passed locally; scripts/smoke.sh integrated into CI and DEV CD, awaiting workflow execution and deployment verification. |
+| **P2.6** | Trivy and Hadolint | Trivy `--ignore-unfixed --severity CRITICAL,HIGH`; zero fixable critical; Hadolint zero errors; HIGH findings fixed or justified in PR. | **PASS** | Step 292 Hadolint passed; Step 293 Trivy found zero HIGH/CRITICAL vulnerabilities with --ignore-unfixed. |
+| **P2.7** | PR, merge and checkpoint | Reviewed PR merged and CP1 booked/completed (site in local container; protected main). | **PENDING** | Public repository and main branch protection verified; PR #5 remains open; updated CI, Karthik review, merge and CP1 still outstanding. |
 
 ### Phase 3 — Terraform foundation
 
@@ -164,7 +164,7 @@
 
 | Milestone | Timing | Evidence required | Status |
 |---|---|---|---|
-| CP1 | After Phase 2 | Local site container + protected main + reviewer meeting | BLOCKED / not booked |
+| CP1 | After Phase 2 | Local site container + protected main + reviewer meeting | PENDING — technical evidence collected; reviewer meeting and sign-off not completed |
 | CP2 | After Phase 5 | DEV AKS app, HPA load evidence, Terraform walkthrough | PENDING |
 | Demo | After Phase 9 | 15-minute live walkthrough + facilitator final acceptance | PENDING |
 

@@ -67,7 +67,7 @@ jobs:
           IMAGE="$ACR_NAME.azurecr.io/azure-devops-web:$IMAGE_SHA"
 
           az acr login --name "$ACR_NAME"
-          docker build --platform linux/amd64 --build-arg GIT_SHA="$IMAGE_SHA" -t "$IMAGE" ./site
+          docker build --platform linux/amd64 --build-arg APP_VERSION="$IMAGE_SHA" -t "$IMAGE" ./site
           docker push "$IMAGE"
           echo "Published $IMAGE"
 
@@ -109,3 +109,23 @@ jobs:
             exit 1
           fi
           echo "DEV rollout successful."
+
+      - name: Smoke Test DEV Deployment
+        env:
+          IMAGE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -e
+          kubectl -n dev port-forward deployment/azure-devops-web \
+            18081:8080 > /tmp/dev-portforward.log 2>&1 &
+          PF_PID=$!
+          trap 'kill "$PF_PID" 2>/dev/null || true' EXIT
+
+          if ! bash scripts/smoke.sh http://127.0.0.1:18081 "$IMAGE_SHA"; then
+            echo "::error::DEV smoke test failed; rolling back."
+            cat /tmp/dev-portforward.log
+            kubectl rollout undo deployment/azure-devops-web -n dev
+            kubectl rollout status deployment/azure-devops-web -n dev --timeout=180s
+            exit 1
+          fi
+
+          echo "PASS: DEV deployment smoke test"

@@ -6,3 +6,11 @@ npm-debug.log*
 .env.*
 *.log
 README.md
+
+infra/
+k8s/
+kubernetes/
+terraform/
+docs/
+*.tfstate
+*.tfplan
