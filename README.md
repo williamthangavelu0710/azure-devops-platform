@@ -1,5 +1,17 @@
 # Azure DevOps Platform
 
+## Project Information
+
+| Field | Value |
+|---|---|
+| Owner | William Thangavelu |
+| Initials | WT |
+| Azure Region | East US (`eastus`) |
+| GitHub Repository | `williamthangavelu0710/azure-devops-platform` |
+| Environments | DEV and PROD |
+| Repository Visibility | Private |
+
+
 A production-inspired DevOps capstone demonstrating infrastructure as code, containerization, Kubernetes orchestration, secure CI/CD, and automated application deployment on Microsoft Azure.
 
 ## Technology Stack

@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Azure DevOps Platform</title>
+    <link rel="stylesheet" href="/style.css">
     <script src="/app.js" defer></script>
 </head>
 <body>
     <h1>Azure DevOps Platform</h1>
+    <p id="banner">Loading environment banner...</p>
     <h2>Deployment Successful!</h2>
 
     <p>Application: NGINX Static Website</p>
@@ -15,9 +17,11 @@
     <p>CI/CD: GitHub Actions</p>
     <p>Infrastructure: Terraform</p>
 
+    <footer>
     <h2>Deployment Information</h2>
     <p>Environment: <span id="environment">Loading...</span></p>
     <p>Git SHA: <span id="version">Loading...</span></p>
     <p>Pod Name: <span id="pod">Loading...</span></p>
+    </footer>
 </body>
 </html>

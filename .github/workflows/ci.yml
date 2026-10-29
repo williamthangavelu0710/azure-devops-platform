@@ -23,18 +23,18 @@ jobs:
         with:
           node-version: '24'
           cache: npm
-          cache-dependency-path: app/package-lock.json
+          cache-dependency-path: site/package-lock.json
 
       - name: Install Dependencies
-        working-directory: ./app
+        working-directory: ./site
         run: npm ci
 
       - name: Validate HTML
-        working-directory: ./app
+        working-directory: ./site
         run: npm run lint
 
       - name: Build Docker Image
-        run: docker build --platform linux/amd64 --build-arg GIT_SHA="${{ github.sha }}" -t azure-devops-web:ci ./app
+        run: docker build --platform linux/amd64 --build-arg GIT_SHA="${{ github.sha }}" -t azure-devops-web:ci ./site
 
       - name: Smoke Test Health Endpoint
         run: |
