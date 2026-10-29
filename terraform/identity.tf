@@ -15,3 +15,17 @@ resource "azurerm_role_assignment" "aks_acr_pull" {
   role_definition_name = "AcrPull"
   principal_id         = azurerm_kubernetes_cluster.main.kubelet_identity[0].object_id
 }
+
+resource "azurerm_role_assignment" "prod_cluster_user" {
+  count                = var.environment == "prod" ? 1 : 0
+  scope                = azurerm_kubernetes_cluster.main.id
+  role_definition_name = "Azure Kubernetes Service Cluster User Role"
+  principal_id         = var.prod_deployer_principal_id
+}
+
+resource "azurerm_role_assignment" "prod_namespace_writer" {
+  count                = var.environment == "prod" ? 1 : 0
+  scope                = "${azurerm_kubernetes_cluster.main.id}/namespaces/prod"
+  role_definition_name = "Azure Kubernetes Service RBAC Writer"
+  principal_id         = var.prod_deployer_principal_id
+}
