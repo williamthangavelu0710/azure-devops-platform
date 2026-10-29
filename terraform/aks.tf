@@ -15,7 +15,7 @@ resource "azurerm_kubernetes_cluster" "main" {
     os_disk_size_gb      = 64
     os_disk_type         = "Managed"
     vm_size              = var.environment == "prod" ? "Standard_D2s_v5" : "Standard_D2s_v4"
-    vnet_subnet_id       = azurerm_subnet.aks.id
+    vnet_subnet_id       = module.network.subnet_id
     upgrade_settings {
       max_surge = "10%"
     }

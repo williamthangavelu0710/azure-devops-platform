@@ -1,19 +1,18 @@
-resource "azurerm_virtual_network" "main" {
-  name                = "vnet-${var.project_name}-${var.environment}"
-  address_space       = [var.environment == "prod" ? "10.20.0.0/16" : "10.10.0.0/16"]
+module "network" {
+  source = "./modules/network"
+
+  project_name        = var.project_name
+  environment         = var.environment
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
-
-  tags = {
-    Project     = var.project_name
-    Environment = var.environment
-    ManagedBy   = "Terraform"
-  }
 }
 
-resource "azurerm_subnet" "aks" {
-  name                 = "snet-aks-${var.environment}"
-  resource_group_name  = azurerm_resource_group.main.name
-  virtual_network_name = azurerm_virtual_network.main.name
-  address_prefixes     = [var.environment == "prod" ? "10.20.0.0/22" : "10.10.1.0/24"]
+moved {
+  from = azurerm_virtual_network.main
+  to   = module.network.azurerm_virtual_network.main
+}
+
+moved {
+  from = azurerm_subnet.aks
+  to   = module.network.azurerm_subnet.aks
 }
