@@ -4,4 +4,4 @@ metadata:
   name: azure-devops-web-config
 data:
   env.json: |
-    {"environment":"PROD"}
+    {"environment":"PROD","banner":"Hello from PROD"}

@@ -21,3 +21,9 @@ variable "environment" {
   type        = string
   default     = "dev"
 }
+
+variable "prod_deployer_principal_id" {
+  description = "Microsoft Entra service principal object ID for GitHub Actions PROD deployments"
+  type        = string
+  default     = null
+}

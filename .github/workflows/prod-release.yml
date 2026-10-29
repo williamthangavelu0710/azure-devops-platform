@@ -1,0 +1,175 @@
+name: Azure DevOps Platform PROD Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_sha:
+        description: "Full 40-character Git SHA of an image previously deployed to DEV"
+        required: true
+        type: string
+      confirm:
+        description: "Type DEPLOY-PROD to confirm"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+
+concurrency:
+  group: azure-devops-platform-prod-deployment
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Release to PROD
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - name: Validate release inputs
+        env:
+          IMAGE_SHA: ${{ inputs.image_sha }}
+          CONFIRM: ${{ inputs.confirm }}
+        run: |
+          test "$CONFIRM" = "DEPLOY-PROD" || {
+            echo "::error::Release confirmation is incorrect"
+            exit 1
+          }
+
+          [[ "$IMAGE_SHA" =~ ^[0-9a-f]{40}$ ]] || {
+            echo "::error::Provide a full 40-character Git SHA"
+            exit 1
+          }
+
+      - name: Checkout approved release
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.image_sha }}
+          fetch-depth: 0
+
+      - name: Verify release commit belongs to main
+        env:
+          IMAGE_SHA: ${{ inputs.image_sha }}
+        run: |
+          git merge-base --is-ancestor "$IMAGE_SHA" origin/main || {
+            echo "::error::Release commit is not part of the main branch"
+            exit 1
+          }
+          echo "Verified release commit belongs to main"
+
+
+      - name: Verify successful DEV deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          IMAGE_SHA: ${{ inputs.image_sha }}
+        run: |
+          echo "Checking DEV deployment history for $IMAGE_SHA"
+
+          RUN_IDS=$(gh api \
+            "repos/$GITHUB_REPOSITORY/actions/workflows/cd.yml/runs?head_sha=$IMAGE_SHA&status=success&per_page=100" \
+            --jq '.workflow_runs[] | select(.event == "workflow_run" and .head_branch == "main" and .conclusion == "success") | .id')
+
+          VERIFIED=false
+
+          for RUN_ID in $RUN_IDS; do
+            if gh api \
+              "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/jobs?per_page=100" \
+              --jq '.jobs[] | select(.name == "Deploy to DEV" and .conclusion == "success") | .id' | grep -q .; then
+              VERIFIED=true
+              break
+            fi
+          done
+
+          if [ "$VERIFIED" != "true" ]; then
+            echo "::error::No successful DEV deployment found for this Git SHA"
+            exit 1
+          fi
+
+          echo "PASS: Selected image SHA has a successful DEV deployment"
+
+          DEV_IMAGE_DIGEST=$(gh run view "$RUN_ID" --log |
+            sed -n "s/.*${IMAGE_SHA}: digest: \(sha256:[0-9a-f]\{64\}\).*/\1/p" |
+            sort -u)
+
+          [[ "$DEV_IMAGE_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]] || {
+            echo "::error::Missing or ambiguous DEV image digest"
+            exit 1
+          }
+
+          echo "DEV_IMAGE_DIGEST=$DEV_IMAGE_DIGEST" >> "$GITHUB_ENV"
+          echo "Verified DEV image digest: $DEV_IMAGE_DIGEST"
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID_PROD }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Verify existing ACR image
+        env:
+          IMAGE_SHA: ${{ inputs.image_sha }}
+        run: |
+          az acr repository show \
+            --name acrdevopswt20261027 \
+            --image "azure-devops-web:$IMAGE_SHA" \
+            --output none
+          IMAGE_DIGEST=$(az acr repository show \
+            --name acrdevopswt20261027 \
+            --image "azure-devops-web:$IMAGE_SHA" \
+            --query digest -o tsv)
+
+          [[ "$IMAGE_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]] || {
+            echo "::error::Invalid or missing container image digest"
+            exit 1
+          }
+
+          if [ "$IMAGE_DIGEST" != "$DEV_IMAGE_DIGEST" ]; then
+            echo "::error::ACR image digest does not match the successful DEV deployment"
+            exit 1
+          fi
+
+          echo "PASS: ACR image digest matches the tested DEV image"
+          echo "IMAGE_DIGEST=$IMAGE_DIGEST" >> "$GITHUB_ENV"
+          echo "Verified existing image digest: $IMAGE_DIGEST"
+
+      - name: Install kubelogin
+        uses: azure/use-kubelogin@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Get PROD AKS credentials
+        uses: azure/aks-set-context@v4
+        with:
+          resource-group: rg-azure-devops-platform-prod
+          cluster-name: aks-azure-devops-platform-prod
+          use-kubelogin: true
+
+      - name: Deploy approved image to PROD
+        env:
+          IMAGE_SHA: ${{ inputs.image_sha }}
+        run: |
+          cd kubernetes/overlays/prod
+          grep -q 'newTag: v3' kustomization.yaml || {
+            echo "::error::Expected image tag placeholder not found"
+            exit 1
+          }
+          sed -i "s|newTag: v3|digest: $IMAGE_DIGEST|" kustomization.yaml
+          grep -Fq "digest: $IMAGE_DIGEST" kustomization.yaml || {
+            echo "::error::Image tag replacement failed"
+            exit 1
+          }
+          kubectl apply -k .
+
+      - name: Verify rollout and rollback on failure
+        run: |
+          if ! kubectl rollout status deployment/azure-devops-web -n prod --timeout=300s; then
+            echo "::error::PROD rollout failed"
+            kubectl rollout undo deployment/azure-devops-web -n prod
+            kubectl rollout status deployment/azure-devops-web -n prod --timeout=180s || true
+            exit 1
+          fi
+          echo "PROD rollout successful"

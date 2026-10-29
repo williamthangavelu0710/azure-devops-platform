@@ -21,3 +21,7 @@ crash.log
 *.tfplan.*
 terraform/aks-admin-recovery.yaml
 .github/workflows/*.backup
+
+# Local Terraform configuration and backups
+backend.hcl
+*.tf.backup
