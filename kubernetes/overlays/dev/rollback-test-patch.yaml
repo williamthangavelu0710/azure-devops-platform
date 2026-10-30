@@ -1,0 +1,15 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: azure-devops-web
+spec:
+  template:
+    spec:
+      containers:
+        - name: web
+          readinessProbe:
+            httpGet:
+              path: /rollback-test-failure
+              port: 8080
+            initialDelaySeconds: 2
+            periodSeconds: 5
