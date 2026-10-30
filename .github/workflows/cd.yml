@@ -53,7 +53,7 @@ jobs:
           ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Azure Login (OIDC)
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: 7daaaae5-8fcc-40c8-ac29-98bc96e0bad2
           tenant-id: 4f6d9379-ac8b-476f-80a3-67dbf739dc36
