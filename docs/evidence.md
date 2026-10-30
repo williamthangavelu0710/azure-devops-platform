@@ -72,3 +72,59 @@ PASS means verified by an actual test or supported command output.
 PARTIAL means implemented but not fully verified.
 PENDING means further work is required.
 EXCEPTION means a facilitator-approved change to the original scope.
+
+## Additional verification — October 30, 2026
+
+### E005 — Deliberately failed DEV release
+- Result: PASS
+- Pull request: https://github.com/williamthangavelu0710/azure-devops-platform/pull/22
+- CD run: https://github.com/williamthangavelu0710/azure-devops-platform/actions/runs/41082536256
+- Test: Changed the Kubernetes readiness probe to /rollback-test-failure.
+- Kubernetes returned HTTP 404 for the readiness probe.
+- GitHub Actions detected the unsuccessful rollout and failed the deployment.
+
+### E006 — Automatic rollback
+- Result: PASS
+- Workflow reported: DEV rollout failed. Restoring previous revision.
+- Kubernetes Deployment recovered to 1/1 READY and 1 AVAILABLE.
+- Readiness probe restored to /healthz.
+- Previously healthy application image restored.
+- This verifies automatic rollback in the DEV environment.
+
+### E007 — Cleanup deployment
+- Result: PASS
+- Cleanup pull request: https://github.com/williamthangavelu0710/azure-devops-platform/pull/23
+- Successful CD run: https://github.com/williamthangavelu0710/azure-devops-platform/actions/runs/41084850474
+- Deployment revision: 7
+- Image tag: bf93a992deb38016c9cc0b5ac0693ad7d132b828
+- Application pod: azure-devops-web-5d9f74b467-hnr8h
+- Deployment READY: 1/1
+- Readiness endpoint: /healthz
+- GitHub branch protection restored to one required approval.
+
+### E008 — Kubernetes HPA and resource metrics
+- Result: PASS for current HPA health and metrics.
+- HPA: azure-devops-web
+- Namespace: dev
+- CPU utilization: 2% against a 50% target.
+- Minimum replicas: 1
+- Maximum replicas: 3
+- Current replicas: 1
+- AbleToScale: True
+- ScalingActive: True
+- ScalingLimited: False
+- kubectl top pods successfully returned CPU and memory metrics.
+- Earlier temporary HPA metric warnings were observed during pod replacement.
+- No newer warnings appeared in the subsequent namespace event listing.
+- Historical load-test scaling evidence should be documented separately.
+
+## Remaining documentation and acceptance work — October 30, 2026
+
+- Review architecture documentation and diagrams.
+- Review operational runbook against implemented DEV workflows.
+- Verify ADR requirements and record approved deviations.
+- Review security hardening and incident-monitoring requirements.
+- Consolidate HPA load-test evidence.
+- Prepare and rehearse the 15-minute DEV-only demonstration.
+- Obtain facilitator acceptance under the approved DEV-only scope.
+- Perform infrastructure teardown only after explicit authorization.
