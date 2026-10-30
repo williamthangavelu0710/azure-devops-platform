@@ -128,3 +128,17 @@ EXCEPTION means a facilitator-approved change to the original scope.
 - Prepare and rehearse the 15-minute DEV-only demonstration.
 - Obtain facilitator acceptance under the approved DEV-only scope.
 - Perform infrastructure teardown only after explicit authorization.
+
+### E009 — PR #25 acceptance checklist merge and review-control restoration
+
+**Date:** October 30, 2026
+
+- **Pull request:** https://github.com/williamthangavelu0710/azure-devops-platform/pull/25
+- **Result:** Merged into `main`.
+- **Post-merge CI:** Run `41136448478` — success.
+- **Post-merge CD:** Run `41136520172` — success.
+- **Deployment behavior:** `Detect DEV Deployment Changes` succeeded; `Deploy to DEV` was skipped because this was a documentation-only change.
+- **Solo-operator review exception:** With operator authorization, temporarily changed `required_approving_review_count` from `1` to `0` to merge PR #25.
+- **Restoration:** Immediately after merging, restored `required_approving_review_count=1`, with stale-review dismissal enabled.
+- **Limitation:** PR #25 was merged without an independent approving review under the documented temporary exception. This is not equivalent to satisfying the original reviewer-approval acceptance criterion.
+- **Azure impact:** No infrastructure changes were made through this documentation update. DEV AKS was last verified `Running / Succeeded`.
