@@ -142,3 +142,20 @@ EXCEPTION means a facilitator-approved change to the original scope.
 - **Restoration:** Immediately after merging, restored `required_approving_review_count=1`, with stale-review dismissal enabled.
 - **Limitation:** PR #25 was merged without an independent approving review under the documented temporary exception. This is not equivalent to satisfying the original reviewer-approval acceptance criterion.
 - **Azure impact:** No infrastructure changes were made through this documentation update. DEV AKS was last verified `Running / Succeeded`.
+
+### E010 — Live HPA scaling, load balancing, and operational health
+
+**Date:** October 30, 2026
+
+- **Environment:** Azure AKS, namespace `dev`.
+- **Result:** PASS for CPU-triggered autoscaling, multi-pod Service routing, resource metrics, logs, and live pod health.
+- **HPA scale-out:** A controlled 120-second CPU workload in the existing NGINX container triggered automatic scaling from 1 to 3 replicas.
+- **HPA scale-in:** Kubernetes recorded `SuccessfulRescale` back to 1 replica after CPU utilization decreased.
+- **Second scaling test:** HPA reached 400% CPU utilization against its 50% target and scaled to 3 healthy replicas.
+- **Service load balancing:** Thirty HTTP requests to `http://azure-devops-web.dev.svc.cluster.local/whoami` returned three distinct pod hostnames, with response counts of 15, 4, and 11.
+- **Resource monitoring:** `kubectl top pods -n dev` returned CPU and memory usage for all three application pods.
+- **Application logs:** `kubectl logs -n dev deployment/azure-devops-web --tail=20` returned NGINX access logs.
+- **Pod health:** `kubectl describe pod` confirmed Running/Ready, zero restarts, configured CPU/memory requests and limits, readiness and liveness probes on `/healthz`, and no warning events.
+- **Cluster health:** The inspected application and system pods were Running with zero restarts.
+- **Limitations:** The original `hey`-based scaling test was not performed; CPU stress was used instead. Centralized monitoring, managed Prometheus/Grafana, and alerting were not implemented or verified. The load-balancing test demonstrates Kubernetes Service routing, not browser-visible hostname changes.
+- **Infrastructure impact:** No infrastructure configuration changes were made during documentation updates.
