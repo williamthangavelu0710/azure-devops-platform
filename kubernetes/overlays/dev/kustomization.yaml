@@ -16,3 +16,6 @@ images:
   - name: azure-devops-web
     newName: acrdevopswt20261027.azurecr.io/azure-devops-web
     newTag: v3
+
+patches:
+  - path: rollback-test-patch.yaml
