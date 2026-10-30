@@ -1,8 +1,37 @@
 # Azure DevOps Platform — Master Capstone Acceptance Checklist
 
 > Source: **Capstone: Build a DevOps Platform on Azure**, Oct 26, 2026, 22 pages. Tracks original `P0.1`–`P9.6` acceptance items, plus checkpoints, final tests, and release safety.
-> Repository: `williamthangavelu0710/azure-devops-platform` · Working branch: `feat/prod-deployment` · Open PR: #5.
+> Repository: `williamthangavelu0710/azure-devops-platform` · Latest documentation PR: #24 (merged) · Current checklist update: local, not yet committed.
 > Baseline evidence recorded from our chat through commit `8ab5e4c`; this checklist **does not imply** we have audited the complete live repository.
+
+## Latest verified baseline — October 30, 2026
+
+This section records subsequent verified progress. The original
+acceptance matrix remains below for traceability.
+
+| Area | Latest verified status |
+|---|---|
+| Architecture and evidence | PR #24 merged into main; commit dce3456 was the documentation branch commit |
+| Main branch protection | One required approval restored after temporary single-operator exception |
+| PR #24 CI | PASS; both required checks successful |
+| Post-merge CI | PASS; GitHub Actions run 41133213490 |
+| Post-merge CD | SUCCESS; run 41133277858; DEV deployment job skipped for documentation-only changes |
+| Live DEV AKS | HEALTHY; deployment 1/1, pod Running, zero restarts |
+| HPA | ACTIVE; CPU 2%/50%, minimum 1, maximum 3 replicas |
+| HPA load test | Previously demonstrated scaling from 1 to 2 replicas; final demo evidence review pending |
+| Failed-release rollback | Demonstrated with intentionally invalid readiness path; healthy release restored |
+| PROD deployment | Not provisioned; facilitator-approved DEV-only exception |
+| PROD approval/promotion | Omitted under facilitator-approved demo exception |
+| Centralized monitoring and alerting | Not implemented; Kubernetes Metrics Server and native health checks available |
+| Two ADRs | Not yet verified or completed |
+| Final live demonstration | PENDING |
+| Facilitator acceptance | PENDING |
+
+The original assignment requirements are not automatically marked
+PASS by these updates. Each acceptance criterion still requires
+its specified evidence or a documented facilitator-approved exception.
+
+---
 
 ## Current verified baseline — October 29, 2026
 
@@ -131,11 +160,11 @@
 | **P4.1** | DEV thin root stack | Remote backend `dev.tfstate`, provider, modules, typed vars, outputs, tfvars, RG data, tags. | **PARTIAL** | DEV Terraform works; exact module architecture and tags not yet audited. |
 | **P4.2** | Network module | Dev 10.10.0.0/16, prod 10.20.0.0/16, /22 AKS subnet, input CIDR validation. | **UNVERIFIED** | Existing network created, exact CIDRs differ from prior lab examples; compare state/config. |
 | **P4.3** | Monitoring module | Log Analytics 30-day retention and appropriate daily quota in both environments. | **UNVERIFIED** | No verified module/application evidence. |
-| **P4.4** | AKS configuration | Pinned k8s version, Free tier, autoscaler, overlay CNI+network policy, Entra/Azure RBAC, disable local accounts, app routing, OMS, AcrPull and scoped deploy roles; running readiness proof. | **PARTIAL** | DEV AKS deployed; known network policy/Azure RBAC gaps recorded. DEV intentionally stopped. |
+| **P4.4** | AKS configuration | Pinned k8s version, Free tier, autoscaler, overlay CNI+network policy, Entra/Azure RBAC, disable local accounts, app routing, OMS, AcrPull and scoped deploy roles; running readiness proof. | **PARTIAL** | DEV AKS deployed; known network policy/Azure RBAC gaps recorded. DEV AKS verified Running/Succeeded on October 30, 2026; remaining configuration gaps require review. |
 | **P4.5** | Terraform outputs | Cluster and RG listed in `terraform output`. | **UNVERIFIED** | Not yet captured. |
 | **P4.6** | DEV no-drift proof | Terraform plan immediately after DEV apply shows zero change. | **PARTIAL** | Prior DEV plan 0/0/0 reported; revalidate targeted stack and drift. |
 | **P4.7** | PROD plan without local apply | Prod is thin copy of dev differing only tfvars/backend key; plan passes; do not apply locally. | **PARTIAL** | PROD plan 9 add/0 change/0 destroy; module parity needs audit; not applied. |
-| **P4.8** | Cost lifecycle | `az aks stop/start` documented in runbook; DEV stopped. | **PARTIAL** | DEV stopped; confirm exact runbook commands. |
+| **P4.8** | Cost lifecycle | `az aks stop/start` documented in runbook; DEV stopped. | **PARTIAL** | DEV AKS verified Running/Succeeded on October 30, 2026; confirm stop/start procedures in the runbook before lifecycle acceptance. |
 | **P4.9** | PR approval/merge | Phase PR reviewed and merged. | **PENDING** | No complete evidence. |
 
 ### Phase 5 — Kubernetes manifests
@@ -145,14 +174,14 @@
 | **P5.1** | Base manifests | Namespace, Deployment, Service, HPA, Ingress, Kustomization rendered. | **PARTIAL** | `kubernetes/base` exists; verify all expected objects and namespace naming deviation. |
 | **P5.2** | Thin dev/prod overlays | ConfigMap generation, HPA range, ingress host, prod-only PDB, tag via Kustomize images; compare render diff. | **PARTIAL** | Overlays exist; full parity validation pending. |
 | **P5.3** | ConfigMap rollout behavior | Env config mounted and change triggers pod rollout via hashed Kustomize name. | **PARTIAL** | ConfigMap mounted with `subPath`; this does not auto-update existing pod; hashed name change behavior unverified. |
-| **P5.4** | Resources and probes | Requests 50m/64Mi limits 200m/128Mi; readiness and liveness healthz; describe pod proof. | **PARTIAL** | Deployment YAML confirms settings; live describe not included in this audit. |
-| **P5.5** | Pod hardening | Nonroot, RO rootfs, tmp writable, no privilege escalation/caps, RuntimeDefault; live pod proof. | **PARTIAL** | Deployment YAML shows controls and emptyDirs; verify running pod. |
-| **P5.6** | HPA and prod PDB | CPU 50%, dev 1–3/prod 2–6, prod PDB minAvailable 1, maxUnavailable 0; HPA CPU known. | **UNVERIFIED** | Known deployment rolling-update maxUnavailable 0; HPA and PDB proof pending. |
+| **P5.4** | Resources and probes | Requests 50m/64Mi limits 200m/128Mi; readiness and liveness healthz; describe pod proof. | **PASS — live deployment configuration** | October 30, 2026: kubectl get deployment azure-devops-web -n dev confirmed CPU request 50m, memory request 64Mi, CPU limit 200m, memory limit 128Mi, and both readiness/liveness HTTP paths /healthz. Separate pod describe evidence not yet captured. |
+| **P5.5** | Pod hardening | Nonroot, RO rootfs, tmp writable, no privilege escalation/caps, RuntimeDefault; live pod proof. | **PASS — live Deployment configuration** | October 30, 2026: kubectl verified runAsNonRoot=true, runAsUser=101, runAsGroup=101, readOnlyRootFilesystem=true, allowPrivilegeEscalation=false, capabilities.drop=[ALL], seccompProfile=RuntimeDefault, and three writable emptyDir volumes for nginx. Running pod azure-devops-web-5d9f74b467-hnr8h independently confirmed UID/GID 101, non-root execution, read-only root filesystem, no privilege escalation, all capabilities dropped, and RuntimeDefault seccomp. |
+| **P5.6** | HPA and prod PDB | CPU 50%, dev 1–3/prod 2–6, prod PDB minAvailable 1, maxUnavailable 0; HPA CPU known. | **PARTIAL — DEV verified** | E008 confirms live DEV HPA CPU 2%/50%, replica limits 1–3, and active metrics. PROD HPA/PDB not deployed under facilitator-approved EX001. Live kubectl verification confirmed DEV Deployment rollingUpdate.maxUnavailable=0 on October 30, 2026. |
 | **P5.7** | Ingress | Web app routing ingress class and host resolves site in browser. | **UNVERIFIED** | Not yet evidenced. |
 | **P5.8** | Manual deploy script | `scripts/deploy.sh <env> <sha>` and smoke test successfully deploy DEV. | **UNVERIFIED** | Previous DEV CD succeeded using inline commands; script acceptance pending. |
-| **P5.9** | HPA scale demonstration | `hey` load scales 1 -> >=2 -> 1; changing hostnames and evidence saved. | **UNVERIFIED** | No live load evidence shown. |
+| **P5.9** | HPA scale demonstration | `hey` load scales 1 -> >=2 -> 1; changing hostnames and evidence saved. | **PARTIAL** | Previously observed scaling from 1 to 2 replicas, recorded in `docs/architecture.md`. E008 confirms active HPA metrics, CPU target 50%, and replica limits 1–3. Detailed load command, scale-down observations, hostname changes, and saved test evidence remain pending. |
 | **P5.10** | Strict manifest validation | Kustomize outputs both pass kubeconform -strict -summary. | **UNVERIFIED** | Kustomize validated; kubeconform strict proof absent. |
-| **P5.11** | PR review, merge and CP2 | Buddy approves/merges phase; CP2 demonstrates DEV + HPA + Terraform. | **PENDING** | Checkpoint not verified; DEV is stopped. |
+| **P5.11** | PR review, merge and CP2 | Buddy approves/merges phase; CP2 demonstrates DEV + HPA + Terraform. | **PENDING** | Checkpoint not verified; DEV AKS verified Running/Succeeded on October 30, 2026. |
 
 ### Phase 6 — CI pipelines
 
@@ -173,7 +202,7 @@
 |---|---|---|---|---|
 | **P7.1** | Single promotion pipeline | On site/Dockerfile/manifests change, build once, deploy/verify DEV, reviewer approves, promote SAME digest/SHA to PROD. | **PARTIAL** | DEV CD exists; PROD manual workflow separate; parity with specified automatic promotion unverified. |
 | **P7.2** | Never rebuild for PROD | Verify ACR tag/digest; replay older PROD deployment without rebuilding. | **PARTIAL** | PROD release workflow validates published digest; live replay pending. |
-| **P7.3** | Automatic rollback proven | Bad readiness/release turns run red, DEV old version still serves, PROD untouched. | **PARTIAL** | Rollout undo in DEV workflow; smoke-triggered rollback and deliberate failure proof pending. |
+| **P7.3** | Automatic rollback proven | Bad readiness/release turns run red, DEV old version still serves, PROD untouched. | **PASS — DEV-only demo scope** | E005–E007 in `docs/evidence.md`: PR #22 caused a failed rollout; CD run `41082536256` triggered automatic rollback; DEV recovered to 1/1 READY. PR #23 cleanup deployment succeeded. PROD not provisioned under EX001. |
 | **P7.4** | Serialize deployments | Per-environment concurrency, cancel-in-progress false; prove queued deploys. | **PARTIAL** | DEV workflow concurrency set; PROD and double-merge proof pending. |
 | **P7.5** | Reviewed PR merged | Phase 7 PR approved and merged. | **PENDING** | PR #5 open. |
 
