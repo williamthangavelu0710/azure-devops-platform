@@ -142,7 +142,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
 
       - name: Get PROD AKS credentials
-        uses: azure/aks-set-context@v4
+        uses: azure/aks-set-context@v5
         with:
           resource-group: rg-azure-devops-platform-prod
           cluster-name: aks-azure-devops-platform-prod
