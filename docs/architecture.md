@@ -70,6 +70,27 @@ Infrastructure components:
                         |
                         +-- Horizontal Pod Autoscaler
 
+### Application Traffic Flow
+
+```text
+HTTP Client (azure-devops.local)
+    |
+    v
+NGINX Ingress Controller
+    |
+    v
+Ingress Rule (host: azure-devops.local, path: /)
+    |
+    v
+Kubernetes Service (port 80 -> targetPort 8080)
+    |
+    v
+NGINX Application Pod (port 8080)
+```
+
+The Ingress controller routes matching HTTP requests to the DEV
+Kubernetes Service, which forwards traffic to ready application pods.
+
 ### Application Deployment
 
 The NGINX application runs inside the Kubernetes DEV namespace.
@@ -173,9 +194,19 @@ Azure, container images, and Kubernetes.
 - Azure RBAC controls access to Azure resources.
 - Kubernetes RBAC provides namespace-scoped permissions.
 
+### Identity and Access Responsibilities
+
+| Component | Responsibility | Access mechanism |
+|---|---|---|
+| GitHub Actions | Runs the DEV deployment workflow | GitHub workflow permissions and OIDC federation |
+| Microsoft Entra ID | Authenticates the federated workflow identity | Short-lived OIDC-based authentication |
+| Azure RBAC | Authorizes access to Azure resources, including ACR and AKS | Azure role assignments; exact scopes require separate audit |
+| Kubernetes RBAC | Authorizes deployment operations in the DEV namespace | Namespace-scoped Role and RoleBinding |
+| Kubernetes pod security context | Enforces non-root execution and container privilege restrictions | runAsNonRoot, runAsUser, readOnlyRootFilesystem, and restricted Linux capabilities |
+
 ### CI/CD Security
 
-- GitHub branch protection requires successful checks.
+- GitHub Actions runs CI checks on pull requests; enforcement of branch protection rules is limited by the GitHub repository plan and requires separate verification.
 - Pull requests provide a controlled integration workflow.
 - Trivy scans container images for vulnerabilities.
 - Git commit SHA tags support image traceability.
@@ -245,7 +276,7 @@ Configured scaling limits:
 - Maximum replicas: 3
 - CPU utilization target: 50 percent
 
-A load test demonstrated scaling from one to two replicas.
+A load test demonstrated automatic scaling from one to three replicas and back to one.
 
 ### Automated Deployment Rollback
 

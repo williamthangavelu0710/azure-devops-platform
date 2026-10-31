@@ -228,3 +228,25 @@ EXCEPTION means a facilitator-approved change to the original scope.
 - Keep AKS stopped for cost control.
 - When live testing is authorized, restart AKS and verify deployment, smoke tests, and remaining live checks.
 - Facilitator CP2 acceptance remains pending.
+
+## E013 — Repository Credential and GitHub Actions Security Audit (October 31, 2026)
+
+- Result: PASS for the security checks performed; A6 final acceptance pending facilitator review.
+- Gitleaks version: 8.30.1.
+- Full-history command: `gitleaks git --redact --no-banner --log-opts="--all" --exit-code=1`.
+- Gitleaks scanned 78 commits and approximately 192.49 KB; no leaks found.
+- GitHub repository-level Actions secrets: none configured.
+- GitHub DEV environment secrets: none configured.
+- GitHub PROD environment secrets: none configured.
+- Repository Actions variable: `DEV_DEPLOY_ENABLED=true`; not a credential.
+- DEV environment Actions variables: none configured.
+- PROD environment variables: Azure client, subscription, and tenant identifiers; no passwords or client secrets identified.
+- Default GitHub Actions workflow permissions: read.
+- GitHub Actions pull-request review approval permission: disabled.
+- CI workflow permissions: contents read.
+- DEV CD and OIDC-test permissions: contents read and id-token write.
+- PROD release permissions: contents read, actions read, and id-token write.
+- No job-level permission overrides found by the workflow search.
+- Azure OIDC authentication was previously verified in E003.
+- Limitations: Gitleaks detection is not exhaustive. Organization-level secrets, external credential stores, and Azure identity role assignments were not independently audited in this check.
+- Acceptance: A6 has supporting evidence but remains subject to facilitator review.
