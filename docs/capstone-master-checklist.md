@@ -244,7 +244,7 @@ its specified evidence or a documented facilitator-approved exception.
 | **A3** | Wrong readiness probe: pipeline red, DEV old version remains, PROD untouched | **PENDING** | — |
 | **A4** | DEV and PROD Terraform pipeline plans show no drift | **PENDING** | — |
 | **A5** | DEV HPA scales to >=2 pods under load | **PENDING** | — |
-| **A6** | Repo/history/settings show no long-lived credentials or passwords | **PENDING** | — |
+| **A6** | Repo/history/settings show no long-lived credentials or passwords | **EVIDENCE VERIFIED - facilitator sign-off pending** | E003, E013 |
 | **A7** | Engineer can explain three selected Terraform, manifest and workflow lines | **PENDING** | — |
 | **A8** | Rollback PROD one revision using only runbook | **PENDING** | — |
 
