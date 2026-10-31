@@ -220,9 +220,9 @@ its specified evidence or a documented facilitator-approved exception.
 
 | ID | Requirement | Done when / exact verification | Status | Evidence or outstanding work |
 |---|---|---|---|---|
-| **P9.1** | Architecture documentation | Azure + traffic diagram, CI/CD diagram, identity access table; buddy can explain release chain. | **PARTIAL** | README diagram exists; required `docs/architecture.md` audit pending. |
-| **P9.2** | Two ADRs | Two Context/Decision/Consequences ADRs in `docs/adr/` merged. | **UNVERIFIED** | Not confirmed. |
-| **P9.3** | Operational runbook | All operational and troubleshooting procedures with tested commands and buddy review. | **PARTIAL** | `docs/operations-runbook.md` referenced; required content and execution audit pending. |
+| **P9.1** | Architecture documentation | Azure + traffic diagram, CI/CD diagram, identity access table; buddy can explain release chain. | **PARTIAL** | Architecture document reviewed and corrected locally on October 31, 2026; infrastructure, CI/CD, Ingress traffic flow, identity/access table, security limitations, HPA and rollback documented. Commit, merge and facilitator review remain pending. |
+| **P9.2** | Two ADRs | Two Context/Decision/Consequences ADRs in `docs/adr/` merged. | **PARTIAL — local ADR review PASS** | ADR-001 and ADR-002 exist and were reviewed locally on October 31, 2026; merge into main remains pending. |
+| **P9.3** | Operational runbook | All operational and troubleshooting procedures with tested commands and buddy review. | **PARTIAL** | Runbook reviewed locally on October 31, 2026; HPA maximum corrected to 3 replicas; complete procedure testing and reviewer acceptance remain pending. |
 | **P9.4** | 15-minute demo | Problem/architecture, PR->DEV->approval->PROD, HPA, failed release rollback, Q&A. | **PENDING** | Demo not conducted. |
 | **P9.5** | Facilitator acceptance | Eight acceptance checks and >=70/100 scored by facilitator. | **PENDING** | Not yet attempted. |
 | **P9.6** | Post-signoff teardown | After explicit approval, destroy PROD/DEV/bootstrap safely; evidence of empty groups and cost in `docs/evidence.md`. | **PENDING** | Never tear down without user signoff. |
