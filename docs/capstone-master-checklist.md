@@ -241,9 +241,9 @@ its specified evidence or a documented facilitator-approved exception.
 |---|---|---|---|
 | **A1** | Heading PR: CI green, DEV updated <=15 minutes, PROD updated after approval | **PENDING** | — |
 | **A2** | Healthz removed PR: smoke test red and cannot merge | **PENDING** | — |
-| **A3** | Wrong readiness probe: pipeline red, DEV old version remains, PROD untouched | **PENDING** | — |
+| **A3** | Wrong readiness probe: pipeline red, DEV old version remains, PROD untouched | **DEV EVIDENCE VERIFIED - facilitator sign-off pending** | E005, E006, E007; PROD scope exception |
 | **A4** | DEV and PROD Terraform pipeline plans show no drift | **PENDING** | — |
-| **A5** | DEV HPA scales to >=2 pods under load | **PENDING** | — |
+| **A5** | DEV HPA scales to >=2 pods under load | **EVIDENCE VERIFIED - facilitator sign-off pending** | E008, E010 |
 | **A6** | Repo/history/settings show no long-lived credentials or passwords | **EVIDENCE VERIFIED - facilitator sign-off pending** | E003, E013 |
 | **A7** | Engineer can explain three selected Terraform, manifest and workflow lines | **PENDING** | — |
 | **A8** | Rollback PROD one revision using only runbook | **PENDING** | — |
