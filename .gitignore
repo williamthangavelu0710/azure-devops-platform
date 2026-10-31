@@ -25,3 +25,10 @@ terraform/aks-admin-recovery.yaml
 # Local Terraform configuration and backups
 backend.hcl
 *.tf.backup
+
+# Local documentation backups
+docs/*.backup.md
+docs/*.bak
+
+# Generated Helm manifests
+kubernetes/ingress/rendered.yaml
