@@ -206,3 +206,25 @@ EXCEPTION means a facilitator-approved change to the original scope.
 ### Infrastructure state
 - AKS intentionally stopped to limit unnecessary runtime costs.
 - No live deployment or infrastructure modification performed during these local checks.
+
+## E012 — PR #28 Merge and Post-Merge Pipeline Verification (October 30–31, 2026)
+
+### Pull request
+- PR #28 successfully merged into main.
+- Both pull-request CI checks passed.
+- Main-branch CI run 41162577847 passed.
+- Required approving review count restored to 1 after a temporary single-operator exception.
+- No independent reviewer approval claimed.
+
+### Post-merge deployment
+- CD run 41162619398 failed at the Kubernetes authentication connectivity check.
+- Error: Kubernetes API hostname could not be resolved.
+- Azure CLI confirmed AKS power state: Stopped.
+- AKS provisioning state: Succeeded.
+- Failure is consistent with the intentionally stopped cluster.
+- No successful post-merge DEV deployment claimed.
+
+### Follow-up
+- Keep AKS stopped for cost control.
+- When live testing is authorized, restart AKS and verify deployment, smoke tests, and remaining live checks.
+- Facilitator CP2 acceptance remains pending.
