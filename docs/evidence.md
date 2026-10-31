@@ -159,3 +159,50 @@ EXCEPTION means a facilitator-approved change to the original scope.
 - **Cluster health:** The inspected application and system pods were Running with zero restarts.
 - **Limitations:** The original `hey`-based scaling test was not performed; CPU stress was used instead. Centralized monitoring, managed Prometheus/Grafana, and alerting were not implemented or verified. The load-balancing test demonstrates Kubernetes Service routing, not browser-visible hostname changes.
 - **Infrastructure impact:** No infrastructure configuration changes were made during documentation updates.
+
+## E011 — Final Technical Validation and CP2 Readiness (October 30, 2026)
+
+### Kubernetes manifest validation
+- Original strict validation: 12/12 resources passed.
+- Updated DEV overlay: 5/5 resources passed kubeconform strict validation.
+- Updated PROD overlay: 6/6 resources passed kubeconform strict validation.
+- PROD validation was local only; no PROD environment was deployed.
+
+### P5.7 — Ingress
+- Base Ingress manifest created with nginx ingressClassName.
+- DEV hostname: azure-devops.local.
+- PROD placeholder hostname: azure-devops-prod.example.com.
+- Both overlays rendered and passed strict schema validation.
+- Live Ingress controller availability, DNS resolution, and browser routing remain unverified.
+
+### P5.8 — Manual deployment
+- scripts/deploy.sh created for DEV-only deployment.
+- Bash syntax validation passed.
+- Invalid SHA and PROD deployment requests were rejected.
+- Operator confirmation safeguard successfully cancelled an unauthorized deployment.
+- Live manual deployment and smoke testing remain pending.
+
+### P5.3 — ConfigMap rollout
+- DEV ConfigMap generation uses Kustomize content-based hashing.
+- Original hash: t974bd42kk.
+- Modified configuration hash: c7kh6ggf54.
+- Deployment references matched their corresponding generated ConfigMap names.
+- Live pod rollout following a ConfigMap change remains pending.
+
+### P5.1/P5.2 — Manifest and overlay acceptance
+- DEV: namespace dev, HPA 1–3 replicas, CPU target 50%.
+- PROD: namespace prod, HPA 2–6 replicas, CPU target 50%, PDB included.
+- Both overlays passed strict schema validation.
+- PROD is outside the facilitator-approved deployment scope.
+- PROD ConfigMap remains static; DEV uses hashed generation.
+
+### P5.11 — CP2 checkpoint readiness
+- DEV application deployment and health previously verified.
+- HPA scale-out, scale-in, and multi-pod routing previously demonstrated.
+- Terraform infrastructure previously validated.
+- PR #27 merged; no independent reviewer approval claimed.
+- Facilitator CP2 acceptance remains pending.
+
+### Infrastructure state
+- AKS intentionally stopped to limit unnecessary runtime costs.
+- No live deployment or infrastructure modification performed during these local checks.

@@ -6,7 +6,6 @@ namespace: dev
 resources:
   - ../../base
   - hpa.yaml
-  - configmap.yaml
 
 replicas:
   - name: azure-devops-web
@@ -17,3 +16,11 @@ images:
     newName: acrdevopswt20261027.azurecr.io/azure-devops-web
     newTag: v3
 
+
+patches:
+  - path: ingress-patch.yaml
+
+configMapGenerator:
+  - name: azure-devops-web-config
+    files:
+      - env.json=config/env.json
