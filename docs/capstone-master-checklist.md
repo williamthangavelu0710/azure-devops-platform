@@ -239,10 +239,10 @@ its specified evidence or a documented facilitator-approved exception.
 
 | ID | Facilitator check | Status | Evidence |
 |---|---|---|---|
-| **A1** | Heading PR: CI green, DEV updated <=15 minutes, PROD updated after approval | **PENDING** | — |
-| **A2** | Healthz removed PR: smoke test red and cannot merge | **PENDING** | — |
+| **A1** | Heading PR: CI green, DEV updated <=15 minutes, PROD updated after approval | **DEV EVIDENCE VERIFIED - facilitator sign-off pending** | PR #34; PROD scope exception |
+| **A2** | Healthz removed PR: smoke test red and cannot merge | **EVIDENCE VERIFIED - facilitator sign-off pending** | PR #35; CI failed; PR closed without merge |
 | **A3** | Wrong readiness probe: pipeline red, DEV old version remains, PROD untouched | **DEV EVIDENCE VERIFIED - facilitator sign-off pending** | E005, E006, E007; PROD scope exception |
-| **A4** | DEV and PROD Terraform pipeline plans show no drift | **PENDING** | — |
+| **A4** | DEV and PROD Terraform pipeline plans show no drift | **DEV EVIDENCE VERIFIED - facilitator sign-off pending** | GitHub Actions run 41246763231: No changes; PROD scope exception |
 | **A5** | DEV HPA scales to >=2 pods under load | **EVIDENCE VERIFIED - facilitator sign-off pending** | E008, E010 |
 | **A6** | Repo/history/settings show no long-lived credentials or passwords | **EVIDENCE VERIFIED - facilitator sign-off pending** | E003, E013 |
 | **A7** | Engineer can explain three selected Terraform, manifest and workflow lines | **PENDING** | — |
