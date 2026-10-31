@@ -220,9 +220,9 @@ its specified evidence or a documented facilitator-approved exception.
 
 | ID | Requirement | Done when / exact verification | Status | Evidence or outstanding work |
 |---|---|---|---|---|
-| **P9.1** | Architecture documentation | Azure + traffic diagram, CI/CD diagram, identity access table; buddy can explain release chain. | **PARTIAL** | README diagram exists; required `docs/architecture.md` audit pending. |
-| **P9.2** | Two ADRs | Two Context/Decision/Consequences ADRs in `docs/adr/` merged. | **UNVERIFIED** | Not confirmed. |
-| **P9.3** | Operational runbook | All operational and troubleshooting procedures with tested commands and buddy review. | **PARTIAL** | `docs/operations-runbook.md` referenced; required content and execution audit pending. |
+| **P9.1** | Architecture documentation | Azure + traffic diagram, CI/CD diagram, identity access table; buddy can explain release chain. | **PARTIAL** | Architecture document reviewed and corrected locally on October 31, 2026; infrastructure, CI/CD, Ingress traffic flow, identity/access table, security limitations, HPA and rollback documented. Committed as 2b5d613; PR #33 has 2/2 successful CI checks but requires one eligible reviewer approval before merge; facilitator acceptance remains pending. |
+| **P9.2** | Two ADRs | Two Context/Decision/Consequences ADRs in `docs/adr/` merged. | **PARTIAL — local ADR review PASS** | ADR-001 and ADR-002 exist and were reviewed locally on October 31, 2026; included in commit 2b5d613 and PR #33; merge blocked pending required reviewer approval. |
+| **P9.3** | Operational runbook | All operational and troubleshooting procedures with tested commands and buddy review. | **PARTIAL** | Runbook reviewed locally on October 31, 2026; HPA maximum corrected to 3 replicas; complete procedure testing and reviewer acceptance remain pending. |
 | **P9.4** | 15-minute demo | Problem/architecture, PR->DEV->approval->PROD, HPA, failed release rollback, Q&A. | **PENDING** | Demo not conducted. |
 | **P9.5** | Facilitator acceptance | Eight acceptance checks and >=70/100 scored by facilitator. | **PENDING** | Not yet attempted. |
 | **P9.6** | Post-signoff teardown | After explicit approval, destroy PROD/DEV/bootstrap safely; evidence of empty groups and cost in `docs/evidence.md`. | **PENDING** | Never tear down without user signoff. |
@@ -241,10 +241,10 @@ its specified evidence or a documented facilitator-approved exception.
 |---|---|---|---|
 | **A1** | Heading PR: CI green, DEV updated <=15 minutes, PROD updated after approval | **PENDING** | — |
 | **A2** | Healthz removed PR: smoke test red and cannot merge | **PENDING** | — |
-| **A3** | Wrong readiness probe: pipeline red, DEV old version remains, PROD untouched | **PENDING** | — |
+| **A3** | Wrong readiness probe: pipeline red, DEV old version remains, PROD untouched | **DEV EVIDENCE VERIFIED - facilitator sign-off pending** | E005, E006, E007; PROD scope exception |
 | **A4** | DEV and PROD Terraform pipeline plans show no drift | **PENDING** | — |
-| **A5** | DEV HPA scales to >=2 pods under load | **PENDING** | — |
-| **A6** | Repo/history/settings show no long-lived credentials or passwords | **PENDING** | — |
+| **A5** | DEV HPA scales to >=2 pods under load | **EVIDENCE VERIFIED - facilitator sign-off pending** | E008, E010 |
+| **A6** | Repo/history/settings show no long-lived credentials or passwords | **EVIDENCE VERIFIED - facilitator sign-off pending** | E003, E013 |
 | **A7** | Engineer can explain three selected Terraform, manifest and workflow lines | **PENDING** | — |
 | **A8** | Rollback PROD one revision using only runbook | **PENDING** | — |
 

@@ -107,7 +107,7 @@ kubectl get services -n dev
 kubectl get hpa -n dev
 ```
 
-The DEV HPA is configured for CPU-based autoscaling with a minimum of one and maximum of five replicas.
+The DEV HPA is configured for CPU-based autoscaling with a minimum of one and maximum of three replicas.
 
 ## 5. Application Health Verification
 
