@@ -58,8 +58,6 @@ flowchart TD
 
     I --> K["DEV Namespace"]
     K --> L["NGINX Web Application"]
-[200~
-
 
 ```
 
