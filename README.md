@@ -39,25 +39,25 @@ A production-inspired DevOps capstone demonstrating infrastructure as code, cont
 
 ```mermaid
 flowchart TD
-    A[Developer] --> B[GitHub Repository]
-    B --> C[GitHub Actions CI]
-    C --> D[Lint, Build and Security Scan]
-    D --> E[CI Test Image]
-    D --> G[Successful CI Triggers CD]
-    G --> P[Build and Publish SHA-Tagged Image]
-    P --> F[Azure Container Registry]
+    A["Developer"] --> B["GitHub Repository"]
+    B --> C["GitHub Actions CI"]
+    C --> D["Lint, Build and Security Scan"]
+    D --> E["CI Test Image"]
+    D --> G["Successful CI Triggers CD"]
+    G --> P["Build and Publish SHA-Tagged Image"]
+    P --> F["Azure Container Registry"]
 
-    G --> H[Microsoft Entra ID / OIDC]
-    H --> I[Azure Kubernetes Service]
+    G --> H["Microsoft Entra ID / OIDC"]
+    H --> I["Azure Kubernetes Service"]
     F --> I
 
-    T[Terraform] --> V[Azure Virtual Network]
+    T["Terraform"] --> V["Azure Virtual Network"]
     T --> I
     T --> F
-    T --> M[Managed Identities and RBAC]
+    T --> M["Managed Identities and RBAC"]
 
-    I --> K[DEV Namespace]
-    K --> L[NGINX Web Application]
+    I --> K["DEV Namespace"]
+    K --> L["NGINX Web Application"]
 [200~
 
 
