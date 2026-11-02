@@ -45,7 +45,7 @@ jobs:
           }
 
       - name: Checkout approved release
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           ref: ${{ inputs.image_sha }}
           fetch-depth: 0
