@@ -14,7 +14,7 @@ replicas:
 images:
   - name: azure-devops-web
     newName: acrdevopswt20261027.azurecr.io/azure-devops-web
-    newTag: v3
+    newTag: 857253542adbb3f44ec6baf5e3b2302eb750e79d
 
 
 patches:
