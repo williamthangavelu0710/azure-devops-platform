@@ -103,7 +103,7 @@ jobs:
           echo "Verified DEV image digest: $DEV_IMAGE_DIGEST"
 
       - name: Azure Login (OIDC)
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID_PROD }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
