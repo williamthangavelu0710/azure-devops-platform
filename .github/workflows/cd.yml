@@ -97,7 +97,7 @@ jobs:
         run: |
           cp -R kubernetes /tmp/azure-dev-kubernetes
           cd /tmp/azure-dev-kubernetes/overlays/dev
-          sed -i "s|newTag: v3|newTag: $IMAGE_SHA|" kustomization.yaml
+          sed -i "s|newTag: .*|newTag: $IMAGE_SHA|" kustomization.yaml
           kubectl apply -k .
 
       - name: Verify Application Rollout and Roll Back on Failure

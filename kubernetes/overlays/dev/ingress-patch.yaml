@@ -4,8 +4,7 @@ metadata:
   name: azure-devops-web
 spec:
   rules:
-    - host: azure-devops.local
-      http:
+    - http:
         paths:
           - path: /
             pathType: Prefix
